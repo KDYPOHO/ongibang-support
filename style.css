@@ -1,0 +1,8 @@
+:root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; background: #f8f1df; color: #2f291f; }
+body { margin: 0 auto; max-width: 760px; padding: 48px 24px 80px; line-height: 1.75; }
+header { margin-bottom: 40px; }
+h1, h2 { line-height: 1.25; }
+a { color: #7a5d13; }
+.card { background: rgba(255,255,255,.72); border: 1px solid rgba(122,93,19,.18); border-radius: 20px; padding: 24px; margin: 18px 0; }
+.muted { color: #6f685d; }
+nav a { margin-right: 16px; }
