@@ -1,6 +1,14 @@
 'use strict';
 (() => {
   document.documentElement.classList.add('js-ready');
+  const english = document.documentElement.lang === 'en';
+  const translations = {
+    '기기의 동작 줄이기 사용 중':'Using Reduce Motion',
+    '움직임 다시 켜기':'Resume motion', '움직임 멈추기':'Pause motion',
+    '잠깐의 쉼이 지나갔어요. 조금 더 머물러도 괜찮아요.':'Your quiet minute is complete. Stay a little longer if you like.',
+    '휴식을 시작했어요. 편안하게 머물러요.':'Your rest has started. Make yourself comfortable.'
+  };
+  const t = text => english ? translations[text] || text : text;
   const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
   let userPaused = false;
   const motionControls = [...document.querySelectorAll('.motion-control')];
@@ -14,7 +22,7 @@
     document.body.classList.toggle('motion-paused', motionPaused());
     motionControls.forEach(button => {
       button.hidden = false;
-      button.textContent = motionPreference.matches ? '기기의 동작 줄이기 사용 중' : userPaused ? '움직임 다시 켜기' : '움직임 멈추기';
+      button.textContent = motionPreference.matches ? t('기기의 동작 줄이기 사용 중') : userPaused ? t('움직임 다시 켜기') : t('움직임 멈추기');
       button.setAttribute('aria-pressed', String(motionPaused()));
       button.disabled = motionPreference.matches;
     });
@@ -78,6 +86,11 @@
     encouragement: {symbol:'☼', place:'스탠드에 담아둔 기억', title:'응원이 필요해', point:['70%','50%'], lines:['처음엔 어렵게만 느껴졌던 일.','내 속도로 한 걸음씩 걸어서','결국 해냈던 그날.'], note:'잘 버텨온 나를, 오늘도 기억해요.'},
     connection: {symbol:'♡', place:'머그잔에 담아둔 기억', title:'연결감을 느끼고 싶어', point:['48%','53%'], lines:['별일 없는 날의 짧은 안부.','내 이야기를 끝까지 들어준','그 따뜻한 마음.'], note:'함께했던 온기가, 오늘의 곁에도 있어요.'}
   };
+  if (english) {
+    Object.assign(examples.rest, {place:'A memory by your blanket',title:'I need rest',lines:['A sunlit weekend afternoon.','Nothing I needed to do.','A moment of feeling at ease.'],note:'You can give yourself that rest today, too.'});
+    Object.assign(examples.encouragement, {place:'A memory by your lamp',title:'I need encouragement',lines:['It felt difficult at first.','One small step at my own pace.','The day I finally made it through.'],note:'Remember the you who kept going.'});
+    Object.assign(examples.connection, {place:'A memory by your mug',title:'I need connection',lines:['A small hello on an ordinary day.','Someone who listened to the end.','The warmth of being heard.'],note:'That kindness can stay beside you today.'});
+  }
   const comfortPanel = document.querySelector('#comfort-panel');
   const comfortTabs = [...document.querySelectorAll('.comfort-options [role="tab"]')];
   const comfortButtons = [...document.querySelectorAll('[data-kind]')];
@@ -104,7 +117,7 @@
     }
     comfortPanel.classList.remove('changing');
     if (!motionPaused()) {void comfortPanel.offsetWidth; comfortPanel.classList.add('changing');}
-    if (announce) document.querySelector('#comfort-announcement').textContent = `${sample.title} — ${sample.place} 예시를 보여드려요.`;
+    if (announce) document.querySelector('#comfort-announcement').textContent = english ? sample.title + ' — example: ' + sample.place + '.' : `${sample.title} — ${sample.place} 예시를 보여드려요.`;
   }
   comfortButtons.forEach(button => button.addEventListener('click', () => selectKind(button)));
   wireTabKeys(comfortTabs, selectKind);
@@ -135,7 +148,7 @@
     counter.textContent = `${String(Math.floor(remaining / 60)).padStart(2,'0')}:${String(remaining % 60).padStart(2,'0')}`;
     if (elapsed >= 60000 && restRunning) {
       restRunning = false; stopRestClock(); dialog.dataset.restState = 'complete';
-      restMessage.textContent = '잠깐의 쉼이 지나갔어요. 조금 더 머물러도 괜찮아요.';
+      restMessage.textContent = t('잠깐의 쉼이 지나갔어요. 조금 더 머물러도 괜찮아요.');
     }
   }
   function tickRest() {
@@ -155,7 +168,7 @@
       button.addEventListener('click', () => {
         if (dialog.open) return;
         stopRestClock(); elapsed = 0; restRunning = true; restTrigger = button;
-        restMessage.textContent = '휴식을 시작했어요. 편안하게 머물러요.';
+        restMessage.textContent = t('휴식을 시작했어요. 편안하게 머물러요.');
         dialog.dataset.restState = 'running'; renderRest(); clearGreetings(); closeMenu();
         dialog.showModal(); document.body.classList.add('rest-open');
         dialog.querySelector('#close-web-rest').focus(); resumeRestClock();
